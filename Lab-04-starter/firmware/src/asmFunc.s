@@ -58,8 +58,59 @@ asmFunc:
  
     
     /*** STUDENTS: Place your code BELOW this line!!! **************/
-
+    /* incoming R0 contains transaction amount */
+    /* clear all flags */
+    mov r2,0
+    LDR r1,=eat_out
+    STR r2,[r1]
+    LDR r1,=stay_in
+    STR r2,[r1]
+    LDR r1,=eat_ice_cream
+    STR r2,[r1]
+    LDR r1,=we_have_a_problem
+    STR r2,[r1]
     
+    LDR r1,=transaction /* r1 has address of transaction amount */
+    STR r0,[r1]	        /* store transaction amount */
+    CMP r0,#1000
+    BGT problem
+    CMP r0,#-1000
+    BLT problem
+    
+    LDR r1,=balance  /* r1 has address of balance */
+    LDR r2,[r1]      /* r2 has incoming balance */
+    ADD r2, r2, r0   /* update balance value */
+    BVS problem      /* check for overflow */
+    STR r2, [r1]     /* store updated balance using r1 address */
+    
+    CMP r2,#0
+    BGT set_eat_out
+    BLT set_stay_in
+    LDR r1,=eat_ice_cream
+    B set_return
+set_eat_out:
+    LDR r1,=eat_out
+    B set_return
+set_stay_in:
+    LDR r1,=stay_in
+set_return:
+    MOV r0,1
+    STR r0,[r1]  /* store flag */
+    LDR r0,=balance
+    LDR r0,[r0]  /* r0 has outgoing balance */
+    b done
+    
+problem:
+    mov r0,0	    /* zero transaction amount */
+    LDR r1,=transaction /* r1 has address of transaction amount */
+    STR r0,[r1]	    /* store transaction amount in transaction */
+    
+    mov r0,1
+    LDR r1,=we_have_a_problem
+    STR r0,[r1]    /* store 1 in we_have_a_problem */
+    LDR r0,=balance
+    LDR r0,[r0]  /* r0 has outgoing balance */
+    b done
     /*** STUDENTS: Place your code ABOVE this line!!! **************/
 
 done:    
