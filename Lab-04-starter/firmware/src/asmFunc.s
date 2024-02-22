@@ -83,21 +83,22 @@ asmFunc:
     BVS problem      /* check for overflow */
     STR r2, [r1]     /* store updated balance using r1 address */
     
-    CMP r2,#0
+    CMP r2,#0        /* compare balance to zero */
     BGT set_eat_out
     BLT set_stay_in
-    LDR r1,=eat_ice_cream
+    LDR r1,=eat_ice_cream /* else balance is zero */
     B set_return
-set_eat_out:
+set_eat_out:              /* balance > 0 */
     LDR r1,=eat_out
     B set_return
-set_stay_in:
+set_stay_in:		/* balance < 0 */
     LDR r1,=stay_in
+    
 set_return:
     MOV r0,1
-    STR r0,[r1]  /* store flag */
+    STR r0,[r1]  /* store selected flag */
     LDR r0,=balance
-    LDR r0,[r0]  /* r0 has outgoing balance */
+    LDR r0,[r0]  /* return r0 has outgoing balance */
     b done
     
 problem:
