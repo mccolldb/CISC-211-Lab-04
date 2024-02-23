@@ -59,8 +59,7 @@ asmFunc:
     
     /*** STUDENTS: Place your code BELOW this line!!! **************/
     /* incoming R0 contains transaction amount */
-    /* clear all flags */
-    mov r2,0
+    mov r2,0 /* clear all flags (use r1/r2 as tmp)*/
     LDR r1,=eat_out
     STR r2,[r1]
     LDR r1,=stay_in
@@ -79,21 +78,25 @@ asmFunc:
     
     LDR r1,=balance  /* r1 has address of balance */
     LDR r2,[r1]      /* r2 has incoming balance */
-    ADD r2, r2, r0   /* update balance value */
+    ADDS r2, r2, r0  /* update balance value (& set flags)*/
     BVS problem      /* check for overflow */
     STR r2, [r1]     /* store updated balance using r1 address */
     
+    /* decide where to eat -- use balance value (still in R2) */
+    /* store address of flag to set in r1 */
     CMP r2,#0        /* compare balance to zero */
     BGT set_eat_out
     BLT set_stay_in
     LDR r1,=eat_ice_cream /* else balance is zero */
     B set_return
+    
 set_eat_out:              /* balance > 0 */
     LDR r1,=eat_out
     B set_return
+    
 set_stay_in:		/* balance < 0 */
     LDR r1,=stay_in
-    
+    /* drop thru */
 set_return:
     MOV r0,1
     STR r0,[r1]  /* store selected flag */
