@@ -1,0 +1,241 @@
+========= GLOBAL VARIABLES MEMORY ADDRESS LIST
+global variable "balance" stored at address:           0x200005C0
+global variable "transaction" stored at address:       0x200005C4
+global variable "eat_out" stored at address:           0x200005C8
+global variable "stay_in" stored at address:           0x200005CC
+global variable "eat_ice_cream" stored at address:     0x200005D0
+global variable "we_have_a_problem" stored at address: 0x200005D4
+========= END -- GLOBAL VARIABLES MEMORY ADDRESS LIST
+
+========= Test Number: 0 =========
+test case INPUT: balance:               5
+test case INPUT: transaction:           7
+flags pass/fail:       PASS
+mem balance pass/fail: PASS
+r0 balance pass/fail:  PASS
+transaction pass/fail: PASS
+debug values                  expected        actual
+we_have_a_problem:.........          0             0
+eat_out:...................          1             1
+stay_in:...................          0             0
+eat_ice_cream:.............          0             0
+balance stored in mem:              12            12
+balance returned in r0:             12            12
+transaction stored in mem:           7             7
+
+========= In-progress test summary:
+4 of 4 tests passed so far...
+
+========= Test Number: 1 =========
+test case INPUT: balance:             100
+test case INPUT: transaction:         -50
+flags pass/fail:       PASS
+mem balance pass/fail: PASS
+r0 balance pass/fail:  PASS
+transaction pass/fail: PASS
+debug values                  expected        actual
+we_have_a_problem:.........          0             0
+eat_out:...................          1             1
+stay_in:...................          0             0
+eat_ice_cream:.............          0             0
+balance stored in mem:              50            50
+balance returned in r0:             50            50
+transaction stored in mem:         -50           -50
+
+========= In-progress test summary:
+8 of 8 tests passed so far...
+
+========= Test Number: 2 =========
+test case INPUT: balance:              75
+test case INPUT: transaction:         -99
+flags pass/fail:       PASS
+mem balance pass/fail: PASS
+r0 balance pass/fail:  PASS
+transaction pass/fail: PASS
+debug values                  expected        actual
+we_have_a_problem:.........          0             0
+eat_out:...................          0             0
+stay_in:...................          1             1
+eat_ice_cream:.............          0             0
+balance stored in mem:             -24           -24
+balance returned in r0:            -24           -24
+transaction stored in mem:         -99           -99
+
+========= In-progress test summary:
+12 of 12 tests passed so far...
+
+========= Test Number: 3 =========
+test case INPUT: balance:               0
+test case INPUT: transaction:         -42
+flags pass/fail:       PASS
+mem balance pass/fail: PASS
+r0 balance pass/fail:  PASS
+transaction pass/fail: PASS
+debug values                  expected        actual
+we_have_a_problem:.........          0             0
+eat_out:...................          0             0
+stay_in:...................          1             1
+eat_ice_cream:.............          0             0
+balance stored in mem:             -42           -42
+balance returned in r0:            -42           -42
+transaction stored in mem:         -42           -42
+
+========= In-progress test summary:
+16 of 16 tests passed so far...
+
+========= Test Number: 4 =========
+test case INPUT: balance:             -44
+test case INPUT: transaction:           0
+flags pass/fail:       PASS
+mem balance pass/fail: PASS
+r0 balance pass/fail:  PASS
+transaction pass/fail: PASS
+debug values                  expected        actual
+we_have_a_problem:.........          0             0
+eat_out:...................          0             0
+stay_in:...................          1             1
+eat_ice_cream:.............          0             0
+balance stored in mem:             -44           -44
+balance returned in r0:            -44           -44
+transaction stored in mem:           0             0
+
+========= In-progress test summary:
+20 of 20 tests passed so far...
+
+========= Test Number: 5 =========
+test case INPUT: balance:               0
+test case INPUT: transaction:           0
+flags pass/fail:       PASS
+mem balance pass/fail: PASS
+r0 balance pass/fail:  PASS
+transaction pass/fail: PASS
+debug values                  expected        actual
+we_have_a_problem:.........          0             0
+eat_out:...................          0             0
+stay_in:...................          0             0
+eat_ice_cream:.............          1             1
+balance stored in mem:               0             0
+balance returned in r0:              0             0
+transaction stored in mem:           0             0
+
+========= In-progress test summary:
+24 of 24 tests passed so far...
+
+========= Test Number: 6 =========
+test case INPUT: balance:             125
+test case INPUT: transaction:        1000
+flags pass/fail:       PASS
+mem balance pass/fail: PASS
+r0 balance pass/fail:  PASS
+transaction pass/fail: PASS
+debug values                  expected        actual
+we_have_a_problem:.........          0             0
+eat_out:...................          1             1
+stay_in:...................          0             0
+eat_ice_cream:.............          0             0
+balance stored in mem:            1125          1125
+balance returned in r0:           1125          1125
+transaction stored in mem:        1000          1000
+
+========= In-progress test summary:
+28 of 28 tests passed so far...
+
+========= Test Number: 7 =========
+test case INPUT: balance:             126
+test case INPUT: transaction:        1001
+flags pass/fail:       PASS
+mem balance pass/fail: PASS
+r0 balance pass/fail:  PASS
+transaction pass/fail: PASS
+debug values                  expected        actual
+we_have_a_problem:.........          1             1
+eat_out:...................          0             0
+stay_in:...................          0             0
+eat_ice_cream:.............          0             0
+balance stored in mem:             126           126
+balance returned in r0:            126           126
+transaction stored in mem:           0             0
+
+========= In-progress test summary:
+32 of 32 tests passed so far...
+
+========= Test Number: 8 =========
+test case INPUT: balance:             127
+test case INPUT: transaction:       -1000
+flags pass/fail:       PASS
+mem balance pass/fail: PASS
+r0 balance pass/fail:  PASS
+transaction pass/fail: PASS
+debug values                  expected        actual
+we_have_a_problem:.........          0             0
+eat_out:...................          0             0
+stay_in:...................          1             1
+eat_ice_cream:.............          0             0
+balance stored in mem:            -873          -873
+balance returned in r0:           -873          -873
+transaction stored in mem:       -1000         -1000
+
+========= In-progress test summary:
+36 of 36 tests passed so far...
+
+========= Test Number: 9 =========
+test case INPUT: balance:             128
+test case INPUT: transaction:       -1001
+flags pass/fail:       PASS
+mem balance pass/fail: PASS
+r0 balance pass/fail:  PASS
+transaction pass/fail: PASS
+debug values                  expected        actual
+we_have_a_problem:.........          1             1
+eat_out:...................          0             0
+stay_in:...................          0             0
+eat_ice_cream:.............          0             0
+balance stored in mem:             128           128
+balance returned in r0:            128           128
+transaction stored in mem:           0             0
+
+========= In-progress test summary:
+40 of 40 tests passed so far...
+
+========= Test Number: 10 =========
+test case INPUT: balance:      2147483647
+test case INPUT: transaction:         120
+flags pass/fail:       PASS
+mem balance pass/fail: PASS
+r0 balance pass/fail:  PASS
+transaction pass/fail: PASS
+debug values                  expected        actual
+we_have_a_problem:.........          1             1
+eat_out:...................          0             0
+stay_in:...................          0             0
+eat_ice_cream:.............          0             0
+balance stored in mem:      2147483647    2147483647
+balance returned in r0:     2147483647    2147483647
+transaction stored in mem:           0             0
+
+========= In-progress test summary:
+44 of 44 tests passed so far...
+
+========= Test Number: 11 =========
+test case INPUT: balance:     -2147483647
+test case INPUT: transaction:        -100
+flags pass/fail:       PASS
+mem balance pass/fail: PASS
+r0 balance pass/fail:  PASS
+transaction pass/fail: PASS
+debug values                  expected        actual
+we_have_a_problem:.........          1             1
+eat_out:...................          0             0
+stay_in:...................          0             0
+eat_ice_cream:.............          0             0
+balance stored in mem:     -2147483647   -2147483647
+balance returned in r0:    -2147483647   -2147483647
+transaction stored in mem:           0             0
+
+========= In-progress test summary:
+48 of 48 tests passed so far...
+
+========= ALL TESTS COMPLETE: Post-test Idle Cycle Number: 1
+Summary of tests: 48 of 48 tests passed
+Final score for test cases: 30 of 30 points
+
