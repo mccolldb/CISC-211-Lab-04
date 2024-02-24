@@ -41,30 +41,9 @@
 #include <inttypes.h>   // required to print out pointers using PRIXPTR macro
 #include "definitions.h"                // SYS function prototypes
 
-/* RTC Time period match values for input clock of 1 KHz */
-#define PERIOD_500MS                            512
-#define PERIOD_1S                               1024
-#define PERIOD_2S                               2048
+void cnano_setup();
+void cnano_printf(const char *__restrict format, ...);
 #define PERIOD_4S                               4096
-
-#define MAX_PRINT_LEN 1000
-
-static volatile bool isRTCExpired = false;
-static volatile bool changeTempSamplingRate = false;
-static volatile bool isUSARTTxComplete = true;
-static uint8_t uartTxBuffer[MAX_PRINT_LEN] = {0};
-
-#if 0
-// Test cases for testing func that adds 3 nums and returns the results
-// AND sets bits in global variables.
-static int32_t depositArray[] = {  0x80000001, 0, 0x80000001,
-                                   5,5,6};
-static int32_t withdrawalArray[] = {  0x80000001, 0x80000001, 0,
-                                      -2, -6, 5};
-static int32_t balanceArray[] = {  0, 0x80000001, 0x80000001,
-                                  -3, -9, 4};
-static int32_t problemArray[] = {1,1,1,0,0,0};
-#endif
 
 // the following array defines pairs of {balance, transaction} values
 // tc stands for test case
@@ -97,7 +76,6 @@ static char * fail = "FAIL";
 // for this lab, the function takes one arg (amount), and returns the balance
 extern int32_t asmFunc(int32_t);
 
-
 extern int32_t balance;
 extern int32_t transaction;
 extern int32_t eat_out;
@@ -106,33 +84,12 @@ extern int32_t eat_ice_cream;
 extern int32_t we_have_a_problem;
 
 
-// set this to 0 if using the simulator. BUT note that the simulator
-// does NOT support the UART, so there's no way to print output.
-#define USING_HW 1
-
-#if USING_HW
-static void rtcEventHandler (RTC_TIMER32_INT_MASK intCause, uintptr_t context)
-{
-    if (intCause & RTC_MODE0_INTENSET_CMP0_Msk)
-    {            
-        isRTCExpired    = true;
-    }
-}
-static void usartDmaChannelHandler(DMAC_TRANSFER_EVENT event, uintptr_t contextHandle)
-{
-    if (event == DMAC_TRANSFER_EVENT_COMPLETE)
-    {
-        isUSARTTxComplete = true;
-    }
-}
-#endif
-
 // print the mem addresses of the global vars at startup
 // this is to help the students debug their code
 static void printGlobalAddresses(void)
 {
     // build the string to be sent out over the serial lines
-    snprintf((char*)uartTxBuffer, MAX_PRINT_LEN,
+    cnano_printf(
             "========= GLOBAL VARIABLES MEMORY ADDRESS LIST\r\n"
             "global variable \"balance\" stored at address:           0x%" PRIXPTR "\r\n"
             "global variable \"transaction\" stored at address:       0x%" PRIXPTR "\r\n"
@@ -149,18 +106,6 @@ static void printGlobalAddresses(void)
             (uintptr_t)(&eat_ice_cream), 
             (uintptr_t)(&we_have_a_problem)
             ); 
-    isRTCExpired = false;
-    isUSARTTxComplete = false;
-
-#if USING_HW 
-    DMAC_ChannelTransfer(DMAC_CHANNEL_0, uartTxBuffer, \
-        (const void *)&(SERCOM5_REGS->USART_INT.SERCOM_DATA), \
-        strlen((const char*)uartTxBuffer));
-    // spin here, waiting for timer and UART to complete
-    while (isUSARTTxComplete == false); // wait for print to finish
-    /* reset it for the next print */
-    isUSARTTxComplete = false;
-#endif
 }
 
 
@@ -329,13 +274,12 @@ static int testResult(int testNum,
     /* only check the string the first time through */
     if (firstTime == true)
     {
-        /* Do first time stuff here, if needed!!!  */
-        
+        /* Do first time stuff here, if needed!!!  */        
         firstTime = false; // don't check the strings for subsequent test cases
     }
            
     // build the string to be sent out over the serial lines
-    snprintf((char*)uartTxBuffer, MAX_PRINT_LEN,
+    cnano_printf(
             "========= Test Number: %d =========\r\n"
             "test case INPUT: balance:     %11ld\r\n"
             "test case INPUT: transaction: %11ld\r\n"
@@ -368,20 +312,7 @@ static int testResult(int testNum,
             correctInMemTransaction, transaction
             );
 
-#if USING_HW 
-    // send the string over the serial bus using the UART
-    DMAC_ChannelTransfer(DMAC_CHANNEL_0, uartTxBuffer, \
-        (const void *)&(SERCOM5_REGS->USART_INT.SERCOM_DATA), \
-        strlen((const char*)uartTxBuffer));
-
-    // spin here until the UART has completed transmission
-    //while  (false == isUSARTTxComplete ); 
-    while (isUSARTTxComplete == false);
-    isUSARTTxComplete = false;
-#endif
-
-    return *failCount;
-    
+    return *failCount;    
 }
 
 
@@ -393,21 +324,8 @@ static int testResult(int testNum,
 // *****************************************************************************
 int main ( void )
 {
-    
- 
-#if USING_HW
-    /* Initialize all modules */
-    SYS_Initialize ( NULL );
-    DMAC_ChannelCallbackRegister(DMAC_CHANNEL_0, usartDmaChannelHandler, 0);
-    RTC_Timer32CallbackRegister(rtcEventHandler, 0);
-    RTC_Timer32Compare0Set( PERIOD_500MS / 10 );
-    RTC_Timer32CounterSet(0);
-    RTC_Timer32Start();
-#else // using the simulator
-    isRTCExpired = true;
-    isUSARTTxComplete = true;
-#endif //SIMULATOR
-    
+    cnano_setup();
+     
     printGlobalAddresses();
 
     // initialize all the variables
@@ -416,8 +334,6 @@ int main ( void )
     int32_t totalPassCount = 0;
     int32_t totalFailCount = 0;
     int32_t totalTests = 0;
-    // int32_t x1 = sizeof(tc);
-    // int32_t x2 = sizeof(tc[0]);
     uint32_t numTestCases = sizeof(tc)/sizeof(tc[0]);
     
     // Loop forever
@@ -428,11 +344,7 @@ int main ( void )
         {
             // Toggle the LED to show we're running a new test case
             LED0_Toggle();
-
-            // reset the state variables for the timer and serial port funcs
-            isRTCExpired = false;
-            isUSARTTxComplete = false;
-            
+           
             // set the balance global variable to the test value
             balance = tc[testCase][0];
             // pass in amount to assembly in r0
@@ -445,32 +357,15 @@ int main ( void )
             // test the result and see if it passed
             failCount = testResult(testCase,newBalance,
                                    &passCount,&failCount);
-            totalPassCount = totalPassCount + passCount;
-            totalFailCount = totalFailCount + failCount;
+            totalPassCount += passCount;
+            totalFailCount += failCount;
             totalTests = totalPassCount + totalFailCount;
 
-#if USING_HW
-
-            // print summary of tests executed so far
-            isUSARTTxComplete = false;
-            snprintf((char*)uartTxBuffer, MAX_PRINT_LEN,
+            cnano_printf(
                     "========= In-progress test summary:\r\n"
                     "%ld of %ld tests passed so far...\r\n"
                     "\r\n",
                     totalPassCount, totalTests); 
-
-            DMAC_ChannelTransfer(DMAC_CHANNEL_0, uartTxBuffer, \
-                (const void *)&(SERCOM5_REGS->USART_INT.SERCOM_DATA), \
-                strlen((const char*)uartTxBuffer));
-
-            // spin here until the UART has completed transmission
-            // and the LED toggle timer has expired. This allows
-            // the test cases to be spread out in time.
-            while ((isRTCExpired == false) ||
-                   (isUSARTTxComplete == false));
-            
-#endif
-
         } // for each test case
         
         // When all test cases are complete, print the pass/fail statistics
@@ -478,17 +373,13 @@ int main ( void )
         // We do this in case there are very few tests and they don't have the
         // terminal hooked up in time.
         uint32_t idleCount = 1;
-        // uint32_t totalTests = totalPassCount + totalFailCount;
         bool firstTime = true;
         while(true)      // post-test forever loop
         {
-            isRTCExpired = false;
-            isUSARTTxComplete = false;
-
             uint32_t numPointsMax = 30;
             uint32_t pointsScored = numPointsMax * totalPassCount / totalTests;
             
-            snprintf((char*)uartTxBuffer, MAX_PRINT_LEN,
+            cnano_printf(
                     "========= ALL TESTS COMPLETE: Post-test Idle Cycle Number: %ld\r\n"
                     "Summary of tests: %ld of %ld tests passed\r\n"
                     "Final score for test cases: %ld of %ld points\r\n"
@@ -497,16 +388,8 @@ int main ( void )
                     totalPassCount, totalTests,
                     pointsScored, numPointsMax); 
 
-#if USING_HW 
-            DMAC_ChannelTransfer(DMAC_CHANNEL_0, uartTxBuffer, \
-                (const void *)&(SERCOM5_REGS->USART_INT.SERCOM_DATA), \
-                strlen((const char*)uartTxBuffer));
-            // spin here, waiting for timer and UART to complete
             LED0_Toggle();
             ++idleCount;
-
-            while ((isRTCExpired == false) ||
-                   (isUSARTTxComplete == false));
 
             // slow down the blink rate after the tests have been executed
             if (firstTime == true)
@@ -515,11 +398,8 @@ int main ( void )
                 RTC_Timer32Compare0Set(PERIOD_4S); // set blink period to 4sec
                 RTC_Timer32CounterSet(0); // reset timer to start at 0
             }
-#endif
         } // end - post-test forever loop
-        
-        // Should never get here...
-        break;
+        break;        // Should never get here...
     } // while ...
             
     /* Execution should not come here during normal operation */
